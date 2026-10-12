@@ -1,0 +1,398 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FIDAK Stage TV</title>
+
+<style>
+*{box-sizing:border-box}
+
+html,body{
+ margin:0;padding:0;width:100%;height:100%;
+ overflow:hidden;background:#080d18;color:#fff;
+ font-family:Arial,sans-serif;text-align:center;
+}
+
+body{
+ display:flex;flex-direction:column;
+ height:100vh;height:100dvh;
+}
+
+header{
+ flex:0 0 auto;padding:8px;
+ background:#111c30;border-bottom:3px solid #00c982;
+ position:relative;
+}
+
+.brand{
+ font-size:clamp(25px,5vh,52px);
+ font-weight:900;color:#00e0a4;letter-spacing:4px;
+}
+
+.sub{
+ font-size:clamp(9px,1.5vh,15px);
+ color:#a9bad1;letter-spacing:2px;
+}
+
+/* Full screen button */
+#fullscreenBtn{
+ position:fixed;
+ top:8px;
+ right:8px;
+ z-index:99999;
+ padding:10px 14px;
+ border:1px solid #00e0a4;
+ border-radius:9px;
+ background:#00a878;
+ color:#fff;
+ font-weight:bold;
+ font-size:14px;
+ cursor:pointer;
+ box-shadow:0 3px 12px #0008;
+}
+
+body.fullscreen-mode #fullscreenBtn{
+ display:none;
+}
+
+main{
+ flex:1;min-height:0;width:100%;
+ display:flex;flex-direction:column;
+ align-items:stretch;justify-content:space-evenly;
+ gap:clamp(5px,1.2vh,14px);
+ padding:clamp(8px,2vw,22px);
+ max-width:1100px;margin:0 auto;
+}
+
+.panel{
+ width:100%;min-height:0;overflow:hidden;
+ background:#152138;border:1px solid #30415d;
+ border-radius:18px;padding:clamp(8px,2vh,20px);
+ display:flex;flex-direction:column;
+ justify-content:center;align-items:center;
+}
+
+.teamPanel{flex:1.1}
+.letterPanel{flex:1.5}
+.timerPanel{flex:.9}
+.chancePanel{flex:1}
+
+.label{
+ font-size:clamp(10px,1.8vh,17px);
+ color:#a9bad1;letter-spacing:2px;
+}
+
+.team{
+ font-size:clamp(27px,6vw,64px);
+ font-weight:bold;color:#00e0a4;
+ overflow-wrap:anywhere;margin-top:7px;
+}
+
+.player{
+ font-size:clamp(18px,3.5vw,38px);
+ margin-top:7px;overflow-wrap:anywhere;
+}
+
+.letter{
+ font-size:clamp(75px,17vh,180px);
+ line-height:1;font-weight:900;color:#ffdc4a;
+ text-shadow:0 0 24px #ffdc4a44;margin:8px 0;
+}
+
+.timer{
+ font-size:clamp(45px,10vh,100px);
+ font-weight:900;line-height:1.05;
+ font-variant-numeric:tabular-nums;margin:5px 0;
+}
+
+.badge{
+ display:inline-block;background:#1c304d;color:#fff;
+ border-radius:22px;padding:6px 15px;
+ font-size:clamp(11px,1.7vh,16px);
+}
+
+.bell{
+ display:none;color:#ff4e62;
+ font-size:clamp(17px,2.5vh,26px);
+ font-weight:bold;margin-top:6px;
+}
+
+.message{
+ color:#ffdc4a;font-size:clamp(14px,2.5vh,26px);
+ overflow-wrap:anywhere;margin-top:5px;
+}
+
+.dots{
+ display:flex;justify-content:center;align-items:center;
+ flex-wrap:wrap;gap:clamp(7px,1.5vw,15px);margin:10px 0;
+}
+
+.dot{
+ display:inline-block;flex-shrink:0;
+ width:clamp(19px,3vh,30px);
+ height:clamp(19px,3vh,30px);
+ border:2px solid #fff;border-radius:50%;
+}
+
+.dot.empty{
+ background:transparent!important;opacity:.65;
+}
+
+.chanceCount{
+ color:#b9c8dc;font-size:clamp(12px,2vh,19px);
+ letter-spacing:2px;
+}
+
+footer{
+ flex:0 0 auto;padding:5px;color:#63738b;
+ font-size:clamp(8px,1.1vh,12px);
+}
+
+/* Landscape TV */
+@media (orientation:landscape){
+ main{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:1fr 1fr;
+  gap:10px;
+ }
+ .teamPanel{grid-column:1;grid-row:1}
+ .letterPanel{grid-column:2;grid-row:1}
+ .timerPanel{grid-column:1;grid-row:2}
+ .chancePanel{grid-column:2;grid-row:2}
+ .letter{font-size:clamp(70px,16vh,150px)}
+ .timer{font-size:clamp(40px,8vh,80px)}
+}
+
+/* Short TV screen */
+@media (orientation:landscape) and (max-height:500px){
+ header{padding:3px}
+ .brand{font-size:24px}
+ .sub{font-size:9px}
+ main{padding:5px;gap:5px}
+ .panel{padding:5px;border-radius:10px}
+ .team{font-size:clamp(20px,4vw,35px)}
+ .player{font-size:clamp(14px,2.5vw,22px)}
+ .letter{font-size:clamp(55px,14vh,85px);margin:3px}
+ .timer{font-size:clamp(32px,7vh,50px)}
+ .dots{margin:5px 0;gap:6px}
+ .dot{width:15px;height:15px}
+ .message{font-size:13px}
+ footer{padding:1px}
+}
+
+/* Portrait mobile */
+@media (orientation:portrait){
+ #fullscreenBtn{top:5px;right:5px;padding:8px 10px;font-size:12px}
+}
+</style>
+</head>
+
+<body>
+
+<button id="fullscreenBtn" onclick="toggleFullscreen()">
+ ⛶ FULL SCREEN
+</button>
+
+<header>
+ <div class="brand">FIDAK</div>
+ <div class="sub"></div>
+</header>
+
+<main>
+
+ <section class="panel teamPanel">
+  <div class="label">CURRENT TEAM</div>
+  <div id="team" class="team">Waiting for teams...</div>
+  <div id="player" class="player">Waiting for player...</div>
+  <div id="bell" class="bell">● BUZZER</div>
+  <div id="message" class="message"></div>
+ </section>
+
+ <section class="panel letterPanel">
+  <div class="label">PLAYER CODE LETTER</div>
+  <div id="letter" class="letter">A</div>
+ </section>
+
+ <section class="panel timerPanel">
+  <div class="label">TIME REMAINING</div>
+  <div id="timer" class="timer">02:00</div>
+  <div id="timerStatus" class="badge">READY</div>
+ </section>
+
+ <section class="panel chancePanel">
+  <div class="label">CURRENT TEAM CHANCES</div>
+  <div id="chanceTeam" class="team">Waiting...</div>
+  <div id="chances" class="dots"></div>
+  <div id="chanceCount" class="chanceCount">3 / 3 CHANCES</div>
+ </section>
+
+</main>
+
+<footer>FIDAK • LIVE STAGE DISPLAY</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<script>
+const firebaseConfig={
+ apiKey:"AIzaSyCY7Rk7ueNsxbLBJyqLHL_OwiMHJFC2oY0",
+ authDomain:"fidak-e-gen.firebaseapp.com",
+ databaseURL:"https://fidak-e-gen-default-rtdb.asia-southeast1.firebasedatabase.app",
+ projectId:"fidak-e-gen",
+ storageBucket:"fidak-e-gen.firebasestorage.app",
+ messagingSenderId:"268719721514",
+ appId:"1:268719721514:web:776a6a50493ef716248753",
+ measurementId:"G-RBXTVREK2C"
+};
+
+if(!firebase.apps.length){
+ firebase.initializeApp(firebaseConfig);
+}
+
+const db=firebase.database();
+const params=new URLSearchParams(location.search);
+const roomId=params.get("room")||"stage1";
+
+const colors=["#00c982","#1685ff","#ff8a00","#a044ff"];
+let state={};
+
+/* Full screen controls */
+async function toggleFullscreen(){
+ try{
+  if(!document.fullscreenElement){
+   const el=document.documentElement;
+
+   if(el.requestFullscreen){
+    await el.requestFullscreen();
+   }else if(el.webkitRequestFullscreen){
+    el.webkitRequestFullscreen();
+   }else{
+    alert("Full Screen is not supported by this browser. Use the browser menu and choose Full Screen if available.");
+   }
+  }else{
+   await document.exitFullscreen();
+  }
+ }catch(error){
+  alert("Full Screen could not start. Try opening this page in your browser and tap the button again.");
+ }
+ updateFullscreenUI();
+}
+
+function updateFullscreenUI(){
+ const active=!!(
+  document.fullscreenElement||
+  document.webkitFullscreenElement
+ );
+
+ document.body.classList.toggle("fullscreen-mode",active);
+ $("fullscreenBtn").textContent=active?"":"⛶ FULL SCREEN";
+}
+
+document.addEventListener("fullscreenchange",updateFullscreenUI);
+document.addEventListener("webkitfullscreenchange",updateFullscreenUI);
+
+function $(id){
+ return document.getElementById(id);
+}
+
+function formatTime(ms){
+ ms=Math.max(0,Math.floor(ms/1000));
+ return String(Math.floor(ms/60)).padStart(2,"0")+":"+
+        String(ms%60).padStart(2,"0");
+}
+
+function getRemaining(){
+ if(state.running&&state.startedAt){
+  return Math.max(
+   0,
+   Number(state.startedRemainingMs??state.remainingMs??0)-
+   (Date.now()-Number(state.startedAt))
+  );
+ }
+ return Math.max(0,Number(state.remainingMs??120000));
+}
+
+function render(){
+ const teams=Array.isArray(state.teams)?state.teams:[];
+ const ti=teams.length
+  ?Math.max(0,Math.min(Number(state.teamIndex||0),teams.length-1))
+  :0;
+
+ const team=teams[ti];
+ const players=team&&Array.isArray(team.players)?team.players:[];
+ const pi=players.length
+  ?Math.max(0,Math.min(Number(state.playerIndex||0),players.length-1))
+  :0;
+
+ const player=players[pi];
+
+ $("team").textContent=team
+  ?(team.name||"TEAM "+(ti+1))
+  :"Waiting for teams...";
+
+ $("player").textContent=player
+  ?(typeof player==="string"?player:(player.name||"Player"))
+  :"Waiting for player...";
+
+ const playerLetter=player&&typeof player==="object"
+  ?player.codeLetter:"";
+
+ $("letter").textContent=
+  (playerLetter||state.letter||"A").toString().toUpperCase();
+
+ $("timer").textContent=formatTime(getRemaining());
+
+ $("timerStatus").textContent=state.running
+  ?"RUNNING"
+  :(getRemaining()===0?"TIME UP":"PAUSED / READY");
+
+ $("message").textContent=state.message||"";
+ $("bell").style.display=state.bell?"block":"none";
+
+ /* Current team's chances only */
+ const root=$("chances");
+ root.innerHTML="";
+
+ if(team){
+  const total=Array.isArray(state.teamTotalChances)
+   ?Math.max(1,Number(state.teamTotalChances[ti]??3))
+   :3;
+
+  const remaining=Array.isArray(state.chancesRemaining)
+   ?Math.max(0,Math.min(total,Number(state.chancesRemaining[ti]??total)))
+   :total;
+
+  $("chanceTeam").textContent=team.name||"TEAM "+(ti+1);
+  $("chanceTeam").style.color=colors[ti%colors.length];
+
+  for(let i=0;i<total;i++){
+   const dot=document.createElement("span");
+   dot.className="dot"+(i<remaining?"":" empty");
+   dot.style.background=colors[ti%colors.length];
+   root.appendChild(dot);
+  }
+
+  $("chanceCount").textContent=remaining+" / "+total+" CHANCES";
+ }else{
+  $("chanceTeam").textContent="Waiting...";
+  $("chanceCount").textContent="NO TEAM SELECTED";
+ }
+}
+
+db.ref("fidakRooms/"+roomId).on("value",snap=>{
+ state=snap.val()||{};
+ render();
+},err=>{
+ $("team").textContent="Connection error";
+ $("player").textContent=err.message;
+});
+
+setInterval(render,250);
+</script>
+
+</body>
+</html>
+
